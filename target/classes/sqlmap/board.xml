@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.bit.board.mapper.BoardMapper">
+	
+	<!--page=2&perPageNum=10 -->
+    <select id="selectBoardListPage" resultType="edu.bit.board.vo.BoardVO" parameterType="edu.bit.board.page.Criteria">
+		<!-- ![CDATA[ 는 sql 구문에 <혹은 >가 들어갈 때에 xml코드로 인식하지 못하도록 넣는 xml문법으로, CDATA section이라고 한다. -->
+		<!-- count(*) over()을 사용하는 이유 그냥 count만 사용하면 결과행이 하나밖에 안나옴. 그리고 에러남(group by쓰라고) 하지만 count(*) over() 같이 사용하면 모든 행이 다 출력됨. -->
+		<![CDATA[
+		SELECT * FROM
+		(
+	        SELECT
+	            A.*,
+	            ROWNUM AS RNUM,
+	            COUNT(*) OVER() AS TOTCNT
+	        FROM
+	            (
+	                SELECT
+	                    *
+	                FROM
+	                    mvc_board
+	                ORDER BY bgroup desc, bstep asc
+	             
+	            ) A
+	    )WHERE RNUM >= #{startNum} AND RNUM <= #{endNum}
+	  	]]>
+	</select>
+	
+	
+</mapper>
